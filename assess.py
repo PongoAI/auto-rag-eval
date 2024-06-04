@@ -5,8 +5,8 @@ import os
 import json
 import math
 load_dotenv()
-
-together_client = OpenAI(api_key=os.environ.get("TOGETHER_API_KEY"), base_url='https://api.together.xyz/v1')
+together_api_key = os.environ.get("TOGETHER_API_KEY")
+together_client = OpenAI(api_key=together_api_key, base_url='https://api.together.xyz/v1')
 
 if os.environ.get("PONGO_API_KEY"):
     pongo_client = pongo.PongoClient(os.environ.get("PONGO_API_KEY"))
@@ -136,6 +136,8 @@ def run_assessment(query, docs, should_run_pongo, scoring_cutoff=5, results_file
     }
     if should_run_pongo and not pongo_client:
         raise RuntimeError('Failed to create Pongo client, please make sure PONGO_API_KEY is defined in your .env')
+    if not together_api_key:
+        raise RuntimeError('TOGETHER_API_KEY not provided in .env')
 
     # handle file safety
     if os.path.exists(results_filepath):
